@@ -7,10 +7,40 @@ const formStatus = document.getElementById('form-status');
 const floatingCta = document.getElementById('floating-cta');
 const heroSection = document.querySelector('.hero');
 const contactSection = document.getElementById('contato');
+const siteHeader = document.querySelector('.site-header');
+const menuToggle = document.getElementById('menu-toggle');
+const navItems = document.querySelectorAll('.nav-links a');
 
 function scrollToForm() {
   form?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+function closeMobileMenu() {
+  if (!siteHeader || !menuToggle) {
+    return;
+  }
+
+  siteHeader.classList.remove('menu-open');
+  menuToggle.setAttribute('aria-expanded', 'false');
+}
+
+menuToggle?.addEventListener('click', () => {
+  if (!siteHeader) {
+    return;
+  }
+
+  const willOpen = !siteHeader.classList.contains('menu-open');
+  siteHeader.classList.toggle('menu-open', willOpen);
+  menuToggle.setAttribute('aria-expanded', String(willOpen));
+});
+
+navItems.forEach((item) => {
+  item.addEventListener('click', () => {
+    if (window.matchMedia('(max-width: 640px)').matches) {
+      closeMobileMenu();
+    }
+  });
+});
 
 document.getElementById('btn-quero-ajudar')?.addEventListener('click', () => {
   scrollToForm();
@@ -51,7 +81,12 @@ function updateFloatingCtaVisibility() {
 }
 
 window.addEventListener('scroll', updateFloatingCtaVisibility, { passive: true });
-window.addEventListener('resize', updateFloatingCtaVisibility);
+window.addEventListener('resize', () => {
+  updateFloatingCtaVisibility();
+  if (!window.matchMedia('(max-width: 640px)').matches) {
+    closeMobileMenu();
+  }
+});
 updateFloatingCtaVisibility();
 
 form?.addEventListener('submit', (event) => {
