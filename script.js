@@ -6,6 +6,7 @@ const form = document.getElementById('contact-form');
 const formStatus = document.getElementById('form-status');
 const floatingCta = document.getElementById('floating-cta');
 const heroSection = document.querySelector('.hero');
+const contactSection = document.getElementById('contato');
 
 function scrollToForm() {
   form?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -33,7 +34,7 @@ floatingCta?.addEventListener('click', (event) => {
 });
 
 function updateFloatingCtaVisibility() {
-  if (!floatingCta || !heroSection) {
+  if (!floatingCta || !heroSection || !contactSection) {
     return;
   }
 
@@ -45,7 +46,8 @@ function updateFloatingCtaVisibility() {
 
   const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
   const passedHero = window.scrollY >= heroBottom;
-  floatingCta.classList.toggle('is-hidden-mobile', !passedHero);
+  const reachedForm = window.scrollY + 120 >= contactSection.offsetTop;
+  floatingCta.classList.toggle('is-hidden-mobile', !passedHero || reachedForm);
 }
 
 window.addEventListener('scroll', updateFloatingCtaVisibility, { passive: true });
