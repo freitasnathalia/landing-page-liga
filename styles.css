@@ -643,10 +643,17 @@ textarea {
   padding: 0.9rem 1.2rem;
   font-weight: 800;
   box-shadow: 0 16px 34px rgba(166, 17, 19, 0.28);
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
 .floating-cta:hover {
   background: #8e0f11;
+}
+
+.floating-cta.is-hidden-mobile {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
 }
 
 @media (max-width: 960px) {
@@ -684,13 +691,13 @@ textarea {
     align-items: stretch;
   }
   .nav-links {
-    flex-wrap: nowrap;
-    overflow-x: auto;
+    flex-wrap: wrap;
+    overflow-x: visible;
     gap: 0.8rem;
     padding-bottom: 0.25rem;
   }
   .nav-links a {
-    white-space: nowrap;
+    white-space: normal;
   }
   .hero {
     padding: 2.5rem 1.25rem;
@@ -702,9 +709,6 @@ textarea {
   .section {
     padding: 2.5rem 1.25rem;
     scroll-margin-top: 1.5rem;
-  }
-  .btn {
-    width: 100%;
   }
   .floating-cta {
     text-align: center;

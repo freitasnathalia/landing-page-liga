@@ -4,6 +4,8 @@ const googleFormViewUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScU7L94DZblv
 const googleFormSubmitUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScU7L94DZblvDCBwXql4Toz4W7r7QTBqf5JsNMk7QRPMjuVKg/formResponse';
 const form = document.getElementById('contact-form');
 const formStatus = document.getElementById('form-status');
+const floatingCta = document.getElementById('floating-cta');
+const heroSection = document.querySelector('.hero');
 
 function scrollToForm() {
   form?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -25,10 +27,30 @@ document.getElementById('btn-instagram-section')?.addEventListener('click', () =
   window.open(instagramUrl, '_blank');
 });
 
-document.getElementById('floating-cta')?.addEventListener('click', (event) => {
+floatingCta?.addEventListener('click', (event) => {
   event.preventDefault();
   scrollToForm();
 });
+
+function updateFloatingCtaVisibility() {
+  if (!floatingCta || !heroSection) {
+    return;
+  }
+
+  const isMobile = window.matchMedia('(max-width: 640px)').matches;
+  if (!isMobile) {
+    floatingCta.classList.remove('is-hidden-mobile');
+    return;
+  }
+
+  const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+  const passedHero = window.scrollY >= heroBottom;
+  floatingCta.classList.toggle('is-hidden-mobile', !passedHero);
+}
+
+window.addEventListener('scroll', updateFloatingCtaVisibility, { passive: true });
+window.addEventListener('resize', updateFloatingCtaVisibility);
+updateFloatingCtaVisibility();
 
 form?.addEventListener('submit', (event) => {
   event.preventDefault();
