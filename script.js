@@ -391,7 +391,7 @@ form?.addEventListener('submit', (event) => {
   }
 
   const payload = new URLSearchParams();
-  payload.append('entry.518304241', email);
+  payload.append('entry.1649451105', email);
   payload.append('entry.1258563751', nome);
   payload.append('entry.69194489', endereco);
   payload.append('entry.193750435', telefone);
@@ -420,17 +420,21 @@ form?.addEventListener('submit', (event) => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-  fetch(googleFormSubmitUrl, {
+  fetch('/.netlify/functions/submit', {
     method: 'POST',
-    mode: 'no-cors',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
     },
     body: payload.toString(),
     signal: controller.signal,
   })
-    .then(() => {
+    .then((response) => {
       clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`status ${response.status}`);
+      }
+
       const successModal = document.getElementById('success-modal');
       form.reset();
       updateAtividadeLimitState();
