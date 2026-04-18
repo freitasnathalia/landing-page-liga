@@ -52,6 +52,43 @@
       </div>
     </section>
 
+    <section id="galeria" class="section section-gallery">
+      <div class="container">
+        <div class="carousel" id="photo-carousel">
+          <button class="carousel-control prev" aria-label="Foto anterior">&#8249;</button>
+          <div class="carousel-viewport">
+            <div class="carousel-track">
+              <div class="carousel-item">
+                <img src="images/logoComFundo.jpg" alt="Foto 1">
+              </div>
+              <div class="carousel-item">
+                <img src="images/foto1.png" alt="Foto 1">
+              </div>
+              <div class="carousel-item">
+                <img src="images/logoComFundo.jpg" alt="Foto 1">
+              </div>
+              <div class="carousel-item">
+                <img src="images/foto1.png" alt="Foto 1">
+              </div>
+              <div class="carousel-item">
+                <img src="images/logoComFundo.jpg" alt="Foto 1">
+              </div>
+              <div class="carousel-item">
+                <img src="images/foto1.png" alt="Foto 1">
+              </div>
+              <div class="carousel-item">
+                <img src="images/logoComFundo.jpg" alt="Foto 1">
+              </div>
+              <div class="carousel-item">
+                <img src="images/foto1.png" alt="Foto 1">
+              </div>
+            </div>
+          </div>
+          <button class="carousel-control next" aria-label="Próxima foto">&#8250;</button>
+        </div>
+      </div>
+    </section>
+
     <section id="acoes" class="section section-actions">
       <div class="container">
         <h2>O que fazemos</h2>
@@ -122,16 +159,6 @@
       </div>
     </section>
 
-    <section class="section section-final-cta">
-      <div class="container final-cta-box">
-        <h2>Você pode fazer parte disso</h2>
-        <p>Se você chegou até aqui, já entende o que fazemos.</p>
-        <p>Agora é o momento de decidir participar.</p>
-        <p>Preencha o formulário e venha viver essa experiência.</p>
-        <button id="btn-participar-agora" class="btn btn-primary">Quero ser voluntário</button>
-      </div>
-    </section>
-
     <section id="instagram" class="section section-instagram">
       <div class="container instagram-box">
         <h2>Acompanhe nossas ações de perto</h2>
@@ -144,7 +171,7 @@
       <div class="container contact-grid">
         <form id="contact-form" class="contact-card card-glow contact-form-card">
           <h2>Quero entrar para o projeto</h2>
-          <p class="form-helper">Faça seu cadastro para mais informações.</p>
+          <p class="form-helper">Faça seu cadastro para mais informações</p>
 
           <div class="form-grid">
             <div class="form-field">
@@ -193,7 +220,7 @@
               </div>
             </fieldset>
 
-            <fieldset class="choice-group">
+            <fieldset class="choice-group choice-group-multi">
               <legend>Qual atividade combina mais com você? (até 2 opções) <span class="required-mark" aria-hidden="true">*</span></legend>
               <div class="choice-options choice-options-two">
                 <label><input type="checkbox" name="atividade" value="Brincadeiras"> Brincadeiras</label>
@@ -206,7 +233,7 @@
               </div>
             </fieldset>
 
-            <fieldset class="choice-group">
+            <fieldset class="choice-group choice-group-multi">
               <legend>Qual sua disponibilidade? <span class="required-mark" aria-hidden="true">*</span></legend>
               <div class="choice-options choice-options-two">
                 <label><input type="checkbox" name="disponibilidade" value="Montagens de sacolinhas (Geralmente realizadas a noite, 2 dias antes do evento)"> Montagens de sacolinhas</label>
@@ -227,6 +254,15 @@
         </form>
       </div>
     </section>
+
+    <dialog id="gallery-lightbox" class="gallery-lightbox" aria-label="Visualizacao ampliada da foto">
+      <div class="gallery-lightbox-content">
+        <button id="gallery-lightbox-prev" class="gallery-lightbox-nav prev" type="button" aria-label="Foto anterior">&#8249;</button>
+        <button id="gallery-lightbox-close" class="gallery-lightbox-close" type="button" aria-label="Fechar visualizacao">&times;</button>
+        <img id="gallery-lightbox-image" src="" alt="">
+        <button id="gallery-lightbox-next" class="gallery-lightbox-nav next" type="button" aria-label="Proxima foto">&#8250;</button>
+      </div>
+    </dialog>
   </main>
 
   <dialog id="success-modal" class="success-modal" aria-labelledby="success-modal-title">

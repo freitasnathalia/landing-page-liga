@@ -1,2 +1,5 @@
 # Local Netlify folder
 .netlify/
+
+# Local Google Forms mapping
+google-forms-entries.local.json

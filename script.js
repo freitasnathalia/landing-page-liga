@@ -463,3 +463,251 @@ form?.addEventListener('submit', (event) => {
       }, { once: true });
     });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const carousel = document.querySelector("#photo-carousel");
+  if (!carousel) return;
+
+  const track = carousel.querySelector(".carousel-track");
+  const items = Array.from(track.children);
+  const prevButton = carousel.querySelector(".carousel-control.prev");
+  const nextButton = carousel.querySelector(".carousel-control.next");
+  const lightbox = document.getElementById("gallery-lightbox");
+  const lightboxImage = document.getElementById("gallery-lightbox-image");
+  const lightboxClose = document.getElementById("gallery-lightbox-close");
+  const lightboxPrev = document.getElementById("gallery-lightbox-prev");
+  const lightboxNext = document.getElementById("gallery-lightbox-next");
+
+  if (!track || !items.length || !prevButton || !nextButton) return;
+
+  let currentPage = 0;
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let isHorizontalSwipe = false;
+  let ignoreNextImageClick = false;
+
+  const getVisibleCount = () => {
+    if (window.innerWidth <= 560) return 1;
+    if (window.innerWidth <= 900) return 2;
+    return 4;
+  };
+
+  const getPageCount = () => Math.max(1, Math.ceil(items.length / getVisibleCount()));
+
+  const updateCarousel = () => {
+    const visibleCount = getVisibleCount();
+    const pageCount = getPageCount();
+
+    if (currentPage >= pageCount) {
+      currentPage = pageCount - 1;
+    }
+
+    const firstItemOfPage = items[currentPage * visibleCount] || items[0];
+    track.style.transform = `translateX(-${firstItemOfPage.offsetLeft}px)`;
+  };
+
+  const goToPreviousPage = () => {
+    const pageCount = getPageCount();
+    currentPage = currentPage === 0 ? pageCount - 1 : currentPage - 1;
+    updateCarousel();
+  };
+
+  const goToNextPage = () => {
+    const pageCount = getPageCount();
+    currentPage = currentPage === pageCount - 1 ? 0 : currentPage + 1;
+    updateCarousel();
+  };
+
+  prevButton.addEventListener("click", goToPreviousPage);
+
+  nextButton.addEventListener("click", goToNextPage);
+
+  carousel.addEventListener("touchstart", (event) => {
+    const firstTouch = event.touches[0];
+    if (!firstTouch) return;
+
+    touchStartX = firstTouch.clientX;
+    touchStartY = firstTouch.clientY;
+    isHorizontalSwipe = false;
+  }, { passive: true });
+
+  carousel.addEventListener("touchmove", (event) => {
+    const currentTouch = event.touches[0];
+    if (!currentTouch) return;
+
+    const deltaX = currentTouch.clientX - touchStartX;
+    const deltaY = currentTouch.clientY - touchStartY;
+    const horizontalDistance = Math.abs(deltaX);
+    const verticalDistance = Math.abs(deltaY);
+    const gestureThreshold = 10;
+
+    if (horizontalDistance < gestureThreshold && verticalDistance < gestureThreshold) {
+      return;
+    }
+
+    if (horizontalDistance > verticalDistance) {
+      isHorizontalSwipe = true;
+    }
+
+    if (isHorizontalSwipe) {
+      event.preventDefault();
+    }
+  }, { passive: false });
+
+  carousel.addEventListener("touchend", (event) => {
+    const lastTouch = event.changedTouches[0];
+    if (!lastTouch) return;
+
+    const deltaX = lastTouch.clientX - touchStartX;
+    const deltaY = lastTouch.clientY - touchStartY;
+    const horizontalDistance = Math.abs(deltaX);
+    const verticalDistance = Math.abs(deltaY);
+    const swipeThreshold = 36;
+
+    if (horizontalDistance < swipeThreshold || horizontalDistance <= verticalDistance) {
+      return;
+    }
+
+    ignoreNextImageClick = true;
+    window.setTimeout(() => {
+      ignoreNextImageClick = false;
+    }, 250);
+
+    if (deltaX < 0) {
+      goToNextPage();
+    } else {
+      goToPreviousPage();
+    }
+
+    isHorizontalSwipe = false;
+  }, { passive: true });
+
+  carousel.addEventListener("touchcancel", () => {
+    isHorizontalSwipe = false;
+  }, { passive: true });
+
+  window.addEventListener("resize", updateCarousel);
+  updateCarousel();
+
+  if (lightbox && lightboxImage && lightboxClose && lightboxPrev && lightboxNext) {
+    let currentLightboxIndex = 0;
+    let lightboxTouchStartX = 0;
+    let lightboxTouchStartY = 0;
+
+    const imageElements = items
+      .map((item) => item.querySelector("img"))
+      .filter(Boolean);
+
+    const renderLightboxImage = () => {
+      const image = imageElements[currentLightboxIndex];
+      if (!image) return;
+
+      lightboxImage.src = image.currentSrc || image.src;
+      lightboxImage.alt = image.alt || "Foto ampliada";
+    };
+
+    const openLightbox = (image) => {
+      const clickedIndex = imageElements.indexOf(image);
+      currentLightboxIndex = clickedIndex >= 0 ? clickedIndex : 0;
+      renderLightboxImage();
+      lightbox.showModal();
+    };
+
+    const showPreviousLightboxImage = () => {
+      if (!imageElements.length) return;
+      currentLightboxIndex = currentLightboxIndex === 0
+        ? imageElements.length - 1
+        : currentLightboxIndex - 1;
+      renderLightboxImage();
+    };
+
+    const showNextLightboxImage = () => {
+      if (!imageElements.length) return;
+      currentLightboxIndex = currentLightboxIndex === imageElements.length - 1
+        ? 0
+        : currentLightboxIndex + 1;
+      renderLightboxImage();
+    };
+
+    const closeLightbox = () => {
+      lightbox.close();
+      lightboxImage.removeAttribute("src");
+      lightboxImage.alt = "";
+    };
+
+    imageElements.forEach((image) => {
+      if (!image) return;
+
+      image.setAttribute("tabindex", "0");
+      image.addEventListener("click", () => {
+        if (ignoreNextImageClick) return;
+        openLightbox(image);
+      });
+      image.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openLightbox(image);
+        }
+      });
+    });
+
+    lightboxPrev.addEventListener("click", showPreviousLightboxImage);
+    lightboxNext.addEventListener("click", showNextLightboxImage);
+    lightboxClose.addEventListener("click", closeLightbox);
+    lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    lightbox.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        showPreviousLightboxImage();
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        showNextLightboxImage();
+      }
+    });
+
+    lightbox.addEventListener("touchstart", (event) => {
+      if (!lightbox.open) return;
+
+      const firstTouch = event.touches[0];
+      if (!firstTouch) return;
+
+      lightboxTouchStartX = firstTouch.clientX;
+      lightboxTouchStartY = firstTouch.clientY;
+    }, { passive: true });
+
+    lightbox.addEventListener("touchmove", (event) => {
+      if (!lightbox.open) return;
+      event.preventDefault();
+    }, { passive: false });
+
+    lightbox.addEventListener("touchend", (event) => {
+      if (!lightbox.open) return;
+
+      const lastTouch = event.changedTouches[0];
+      if (!lastTouch) return;
+
+      const deltaX = lastTouch.clientX - lightboxTouchStartX;
+      const deltaY = lastTouch.clientY - lightboxTouchStartY;
+      const horizontalDistance = Math.abs(deltaX);
+      const verticalDistance = Math.abs(deltaY);
+      const swipeThreshold = 32;
+
+      if (horizontalDistance < swipeThreshold || horizontalDistance <= verticalDistance) {
+        return;
+      }
+
+      if (deltaX < 0) {
+        showNextLightboxImage();
+      } else {
+        showPreviousLightboxImage();
+      }
+    }, { passive: true });
+  }
+});
