@@ -148,23 +148,27 @@
 
           <div class="form-grid">
             <div class="form-field">
-              <label for="nome">Nome</label>
-              <input type="text" id="nome" name="nome" placeholder="Seu nome" required>
+              <label for="nome">Nome <span class="required-mark" aria-hidden="true">*</span></label>
+              <input type="text" id="nome" name="nome" placeholder="Seu nome" autocomplete="name" minlength="3" required>
+              <p id="nome-error" class="field-error" aria-live="polite" hidden></p>
             </div>
 
             <div class="form-field">
-              <label for="email">E-mail</label>
-              <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+              <label for="email">E-mail <span class="required-mark" aria-hidden="true">*</span></label>
+              <input type="email" id="email" name="email" placeholder="seu@email.com" autocomplete="email" required>
+              <p id="email-error" class="field-error" aria-live="polite" hidden></p>
             </div>
 
             <div class="form-field">
-              <label for="telefone">Telefone</label>
-              <input type="tel" id="telefone" name="telefone" placeholder="(19) 99999-9999" required>
+              <label for="telefone">Celular <span class="required-mark" aria-hidden="true">*</span></label>
+              <input type="tel" id="telefone" name="telefone" placeholder="(19) 99999-9999" autocomplete="tel" inputmode="tel" minlength="15" maxlength="15" pattern="\([0-9]{2}\)\s[0-9]{5}-[0-9]{4}" title="Digite um celular no formato (19) 99999-9999" required>
+              <p id="telefone-error" class="field-error" aria-live="polite" hidden></p>
             </div>
 
             <div class="form-field">
-              <label for="endereco">Endereço</label>
-              <input type="text" id="endereco" name="endereco" placeholder="Rua, número e bairro" required>
+              <label for="endereco">Endereço <span class="required-mark" aria-hidden="true">*</span></label>
+              <input type="text" id="endereco" name="endereco" placeholder="Endereço" autocomplete="street-address" minlength="5" required>
+              <p id="endereco-error" class="field-error" aria-live="polite" hidden></p>
             </div>
           </div>
 
@@ -175,9 +179,9 @@
             </div>
 
             <fieldset class="choice-group">
-              <legend>Como conheceu o projeto? <span aria-hidden="true">*</span></legend>
+              <legend>Como conheceu o projeto?</legend>
               <div class="choice-options choice-options-two">
-                <label><input type="radio" name="conheceu" value="Instagram" required> Instagram</label>
+                <label><input type="radio" name="conheceu" value="Instagram"> Instagram</label>
                 <label><input type="radio" name="conheceu" value="Facebook"> Facebook</label>
                 <label><input type="radio" name="conheceu" value="Familiares"> Familiares</label>
                 <label><input type="radio" name="conheceu" value="Amigos"> Amigos</label>
@@ -185,11 +189,12 @@
               </div>
               <div class="choice-other">
                 <input type="text" id="conheceu-outro" name="conheceu_outro" placeholder="Se marcou outro, escreva aqui">
+                <p id="conheceu-outro-error" class="field-error" aria-live="polite" hidden></p>
               </div>
             </fieldset>
 
             <fieldset class="choice-group">
-              <legend>Qual atividade combina mais com você? (até 2 opções) <span aria-hidden="true">*</span></legend>
+              <legend>Qual atividade combina mais com você? (até 2 opções) <span class="required-mark" aria-hidden="true">*</span></legend>
               <div class="choice-options choice-options-two">
                 <label><input type="checkbox" name="atividade" value="Brincadeiras"> Brincadeiras</label>
                 <label><input type="checkbox" name="atividade" value="Pintura Facial"> Pintura Facial</label>
@@ -202,7 +207,7 @@
             </fieldset>
 
             <fieldset class="choice-group">
-              <legend>Qual sua disponibilidade? <span aria-hidden="true">*</span></legend>
+              <legend>Qual sua disponibilidade? <span class="required-mark" aria-hidden="true">*</span></legend>
               <div class="choice-options choice-options-two">
                 <label><input type="checkbox" name="disponibilidade" value="Montagens de sacolinhas (Geralmente realizadas a noite, 2 dias antes do evento)"> Montagens de sacolinhas</label>
                 <label><input type="checkbox" name="disponibilidade" value="Ação Atual (Divulgada no grupo de voluntários)"> Ação atual</label>
@@ -223,6 +228,33 @@
       </div>
     </section>
   </main>
+
+  <dialog id="success-modal" class="success-modal" aria-labelledby="success-modal-title">
+    <div class="success-modal-content">
+      <div class="success-modal-icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg>
+      </div>
+      <h3 id="success-modal-title">Cadastro enviado!</h3>
+      <p>Obrigado por querer fazer parte da Liga do Bem.</p>
+      <p>Em breve nossa equipe entrará em contato com você.</p>
+      <button id="success-modal-close" class="btn btn-primary">Fechar</button>
+    </div>
+  </dialog>
+
+  <dialog id="error-modal" class="error-modal" aria-labelledby="error-modal-title">
+    <div class="error-modal-content">
+      <div class="error-modal-icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="16.5" r="1"/></svg>
+      </div>
+      <h3 id="error-modal-title">Não conseguimos confirmar seu envio</h3>
+      <p>Para garantir, finalize no Google Forms:</p>
+      <a class="modal-inline-link" href="https://docs.google.com/forms/d/e/1FAIpQLScU7L94DZblvDCBwXql4Toz4W7r7QTBqf5JsNMk7QRPMjuVKg/viewform" target="_blank" rel="noopener noreferrer">Abrir Google Forms</a>
+      <div class="modal-actions">
+        <button id="error-modal-close" class="btn btn-secondary" type="button">Fechar</button>
+        <a class="btn btn-primary" href="https://docs.google.com/forms/d/e/1FAIpQLScU7L94DZblvDCBwXql4Toz4W7r7QTBqf5JsNMk7QRPMjuVKg/viewform" target="_blank" rel="noopener noreferrer">Ir para Google Forms</a>
+      </div>
+    </div>
+  </dialog>
 
   <a href="#" id="floating-cta" class="floating-cta" aria-label="Quero ser voluntário agora">Quero ser voluntário</a>
 

@@ -10,10 +10,230 @@ const contactSection = document.getElementById('contato');
 const siteHeader = document.querySelector('.site-header');
 const menuToggle = document.getElementById('menu-toggle');
 const navItems = document.querySelectorAll('.nav-links a');
+const phoneInput = document.getElementById('telefone');
+const conheceuOutroInput = document.getElementById('conheceu-outro');
+const conheceuOutroError = document.getElementById('conheceu-outro-error');
+const atividadeInputs = Array.from(document.querySelectorAll('input[name="atividade"]'));
+const atividadeOutroInput = document.getElementById('atividade-outro');
+const disponibilidadeInputs = Array.from(document.querySelectorAll('input[name="disponibilidade"]'));
+const submitButton = form?.querySelector('button[type="submit"]');
+const nomeInput = document.getElementById('nome');
+const emailInput = document.getElementById('email');
+const enderecoInput = document.getElementById('endereco');
+const nomeError = document.getElementById('nome-error');
+const emailError = document.getElementById('email-error');
+const telefoneError = document.getElementById('telefone-error');
+const enderecoError = document.getElementById('endereco-error');
+
+function showFieldError(input, errorEl, message) {
+  if (!input || !errorEl) {
+    return;
+  }
+  input.classList.add('is-invalid');
+  errorEl.textContent = message;
+  errorEl.hidden = false;
+}
+
+function clearFieldError(input, errorEl) {
+  if (!input || !errorEl) {
+    return;
+  }
+  input.classList.remove('is-invalid');
+  errorEl.textContent = '';
+  errorEl.hidden = true;
+}
+
+function getFieldErrorMessage(input) {
+  if (!input.value.trim()) {
+    if (input.id === 'nome') return 'Preencha seu nome.';
+    if (input.id === 'email') return 'Preencha seu e-mail.';
+    if (input.id === 'telefone') return 'Preencha o celular com DDD.';
+    if (input.id === 'endereco') return 'Preencha seu endereço.';
+  }
+  if (input.id === 'email') return 'Informe um e-mail válido.';
+  if (input.id === 'telefone') return 'Celular inválido.';
+  if (input.id === 'nome') return 'Mínimo 3 caracteres.';
+  if (input.id === 'endereco') return 'Mínimo 5 caracteres.';
+  return 'Campo inválido.';
+}
+
+function clearConheceuOutroErrorState() {
+  if (!conheceuOutroInput) {
+    return;
+  }
+
+  conheceuOutroInput.classList.remove('is-invalid');
+  const wrapper = conheceuOutroInput.closest('.choice-other');
+  wrapper?.classList.remove('has-error');
+
+  if (conheceuOutroError) {
+    conheceuOutroError.textContent = '';
+    conheceuOutroError.hidden = true;
+  }
+}
+
+function getAtividadeCount() {
+  const selecionadas = atividadeInputs.filter((item) => item.checked).length;
+  return selecionadas + (hasAtividadeOutroValue() ? 1 : 0);
+}
+
+function updateSubmitButtonState() {
+  if (!submitButton) {
+    return;
+  }
+
+  const requiredFieldsValid = [nomeInput, emailInput, phoneInput, enderecoInput]
+    .every((input) => input && input.value.trim() && input.checkValidity());
+
+  const atividadeCount = getAtividadeCount();
+  const atividadeValida = atividadeCount >= 1 && atividadeCount <= 2;
+  const disponibilidadeValida = disponibilidadeInputs.some((item) => item.checked);
+
+  submitButton.disabled = !(requiredFieldsValid && atividadeValida && disponibilidadeValida);
+}
+
+function hasAtividadeOutroValue() {
+  return Boolean(String(atividadeOutroInput?.value || '').trim());
+}
+
+function updateAtividadeLimitState() {
+  const selecionadas = atividadeInputs.filter((item) => item.checked);
+  const totalSelecionado = selecionadas.length + (hasAtividadeOutroValue() ? 1 : 0);
+  const atingiuLimite = totalSelecionado >= 2;
+
+  atividadeInputs.forEach((item) => {
+    const deveDesabilitar = atingiuLimite && !item.checked;
+    item.disabled = deveDesabilitar;
+
+    const label = item.closest('label');
+    if (label) {
+      label.classList.toggle('is-disabled', deveDesabilitar);
+      label.setAttribute('aria-disabled', String(deveDesabilitar));
+    }
+  });
+
+  if (atividadeOutroInput) {
+    const deveDesabilitarOutro = atingiuLimite && !hasAtividadeOutroValue();
+    atividadeOutroInput.disabled = deveDesabilitarOutro;
+
+    const otherWrapper = atividadeOutroInput.closest('.choice-other');
+    if (otherWrapper) {
+      otherWrapper.classList.toggle('is-disabled', deveDesabilitarOutro);
+      otherWrapper.setAttribute('aria-disabled', String(deveDesabilitarOutro));
+    }
+  }
+}
+
+function onlyDigits(value) {
+  return String(value || '').replace(/\D/g, '');
+}
+
+function formatBrazilPhone(value) {
+  const digits = onlyDigits(value).slice(0, 11);
+
+  if (digits.length <= 2) {
+    return digits ? `(${digits}` : '';
+  }
+
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  }
+
+  if (digits.length <= 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+function isValidBrazilPhone(value) {
+  const digits = onlyDigits(value);
+  return digits.length === 11;
+}
 
 function scrollToForm() {
   form?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+phoneInput?.addEventListener('input', () => {
+  phoneInput.setCustomValidity('');
+  phoneInput.value = formatBrazilPhone(phoneInput.value);
+  if (phoneInput.checkValidity()) {
+    clearFieldError(phoneInput, telefoneError);
+  }
+  updateSubmitButtonState();
+});
+
+phoneInput?.addEventListener('blur', () => {
+  phoneInput.setCustomValidity('');
+  if (!phoneInput.checkValidity()) {
+    showFieldError(phoneInput, telefoneError, getFieldErrorMessage(phoneInput));
+  } else {
+    clearFieldError(phoneInput, telefoneError);
+  }
+});
+
+phoneInput?.addEventListener('invalid', () => {
+  if (!phoneInput.value) {
+    phoneInput.setCustomValidity('Preencha o celular com DDD.');
+    return;
+  }
+
+  if (!isValidBrazilPhone(phoneInput.value)) {
+    phoneInput.setCustomValidity('Informe um celular válido no formato (19) 99999-9999.');
+  }
+});
+
+conheceuOutroInput?.addEventListener('input', () => {
+  conheceuOutroInput.setCustomValidity('');
+  clearConheceuOutroErrorState();
+});
+
+const fieldErrorMap = [
+  [nomeInput, nomeError],
+  [emailInput, emailError],
+  [enderecoInput, enderecoError],
+];
+
+fieldErrorMap.forEach(([input, errorEl]) => {
+  input?.addEventListener('input', () => {
+    if (input.checkValidity()) {
+      clearFieldError(input, errorEl);
+    }
+    updateSubmitButtonState();
+  });
+
+  input?.addEventListener('blur', () => {
+    if (!input.checkValidity()) {
+      showFieldError(input, errorEl, getFieldErrorMessage(input));
+    } else {
+      clearFieldError(input, errorEl);
+    }
+  });
+});
+
+atividadeInputs.forEach((input) => {
+  input.addEventListener('change', () => {
+    atividadeInputs.forEach((item) => item.setCustomValidity(''));
+    atividadeOutroInput?.setCustomValidity('');
+    updateAtividadeLimitState();
+    updateSubmitButtonState();
+  });
+});
+
+atividadeOutroInput?.addEventListener('input', () => {
+  atividadeInputs.forEach((item) => item.setCustomValidity(''));
+  atividadeOutroInput.setCustomValidity('');
+  updateAtividadeLimitState();
+  updateSubmitButtonState();
+});
+
+disponibilidadeInputs.forEach((input) => {
+  input.addEventListener('change', updateSubmitButtonState);
+});
+
+updateAtividadeLimitState();
+updateSubmitButtonState();
 
 function closeMobileMenu() {
   if (!siteHeader || !menuToggle) {
@@ -91,6 +311,8 @@ updateFloatingCtaVisibility();
 
 form?.addEventListener('submit', (event) => {
   event.preventDefault();
+  formStatus.textContent = '';
+  formStatus.className = 'form-status';
 
   const allowedConheceu = ['Instagram', 'Facebook', 'Familiares', 'Amigos', 'Outro'];
   const allowedAtividades = [
@@ -119,19 +341,7 @@ form?.addEventListener('submit', (event) => {
   const atividadesValidas = atividades.filter((item) => allowedAtividades.includes(item));
   const disponibilidadesValidas = disponibilidades.filter((item) => allowedDisponibilidades.includes(item));
 
-  if (!nome || !email || !endereco || !telefone) {
-    formStatus.textContent = 'Preencha nome, e-mail, endereço e telefone.';
-    formStatus.className = 'form-status is-error';
-    return;
-  }
-
-  if (!conheceu) {
-    formStatus.textContent = 'Selecione como conheceu o projeto.';
-    formStatus.className = 'form-status is-error';
-    return;
-  }
-
-  if (!allowedConheceu.includes(conheceu)) {
+  if (conheceu && !allowedConheceu.includes(conheceu)) {
     formStatus.textContent = 'Seleção inválida em "Como conheceu".';
     formStatus.className = 'form-status is-error';
     return;
@@ -139,17 +349,38 @@ form?.addEventListener('submit', (event) => {
 
   const conheceuEhOutro = conheceu === 'Outro';
   if (conheceuEhOutro && !conheceuOutro) {
-    formStatus.textContent = 'Se marcou "Outro" em "Como conheceu", preencha o campo de texto.';
-    formStatus.className = 'form-status is-error';
+    if (conheceuOutroInput) {
+      const errorMessage = 'Preencha este campo ao selecionar "Outro".';
+      conheceuOutroInput.classList.add('is-invalid');
+      const wrapper = conheceuOutroInput.closest('.choice-other');
+      wrapper?.classList.add('has-error');
+
+      if (conheceuOutroError) {
+        conheceuOutroError.textContent = errorMessage;
+        conheceuOutroError.hidden = false;
+      }
+
+      conheceuOutroInput.setCustomValidity(errorMessage);
+      conheceuOutroInput.reportValidity();
+      conheceuOutroInput.focus();
+      conheceuOutroInput.setCustomValidity('');
+    }
     return;
   }
+
+  clearConheceuOutroErrorState();
 
   const incluiuAtividadeOutro = Boolean(atividadeOutro);
   const totalAtividades = atividadesValidas.length + (incluiuAtividadeOutro ? 1 : 0);
 
   if (totalAtividades === 0 || totalAtividades > 2) {
-    formStatus.textContent = 'Selecione de 1 a 2 atividades.';
-    formStatus.className = 'form-status is-error';
+    const alvoAtividade = atividadeOutroInput && atividadeOutro === '' ? atividadeInputs[0] : atividadeOutroInput || atividadeInputs[0];
+    if (alvoAtividade) {
+      alvoAtividade.setCustomValidity('Selecione de 1 a 2 atividades.');
+      alvoAtividade.reportValidity();
+      alvoAtividade.setCustomValidity('');
+      alvoAtividade.focus();
+    }
     return;
   }
 
@@ -167,11 +398,13 @@ form?.addEventListener('submit', (event) => {
   if (experiencia) {
     payload.append('entry.1203594912', experiencia);
   }
-  if (conheceuEhOutro) {
-    payload.append('entry.167906286', '__other_option__');
-    payload.append('entry.167906286.other_option_response', conheceuOutro);
-  } else {
-    payload.append('entry.167906286', conheceu);
+  if (conheceu) {
+    if (conheceuEhOutro) {
+      payload.append('entry.167906286', '__other_option__');
+      payload.append('entry.167906286.other_option_response', conheceuOutro);
+    } else {
+      payload.append('entry.167906286', conheceu);
+    }
   }
 
   atividadesValidas.forEach((atividade) => payload.append('entry.1342325393', atividade));
@@ -198,14 +431,31 @@ form?.addEventListener('submit', (event) => {
   })
     .then(() => {
       clearTimeout(timeoutId);
-      formStatus.textContent = 'Cadastro enviado com sucesso! Em breve nossa equipe entrará em contato.';
-      formStatus.className = 'form-status is-success';
+      const successModal = document.getElementById('success-modal');
       form.reset();
+      updateAtividadeLimitState();
+      updateSubmitButtonState();
+      successModal?.showModal();
+
+      document.getElementById('success-modal-close')?.addEventListener('click', () => successModal?.close(), { once: true });
+      successModal?.addEventListener('close', () => {
+        formStatus.textContent = '';
+        formStatus.className = 'form-status';
+      }, { once: true });
+      successModal?.addEventListener('click', (e) => {
+        if (e.target === successModal) successModal.close();
+      }, { once: true });
     })
     .catch(() => {
       clearTimeout(timeoutId);
-      formStatus.textContent = 'Não conseguimos confirmar o envio aqui. Vamos abrir o Google Forms para você concluir.';
-      formStatus.className = 'form-status is-error';
-      window.open(googleFormViewUrl, '_blank');
+      const errorModal = document.getElementById('error-modal');
+      formStatus.textContent = '';
+      formStatus.className = 'form-status';
+      errorModal?.showModal();
+
+      document.getElementById('error-modal-close')?.addEventListener('click', () => errorModal?.close(), { once: true });
+      errorModal?.addEventListener('click', (e) => {
+        if (e.target === errorModal) errorModal.close();
+      }, { once: true });
     });
 });
