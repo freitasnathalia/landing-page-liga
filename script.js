@@ -1,7 +1,7 @@
 const whatsappUrl = 'https://wa.me/5519991642207?text=Ol%C3%A1%20Liga%20do%20Bem%2C%20gostaria%20de%20saber%20mais%20sobre%20como%20participar.';
 const instagramUrl = 'https://instagram.com/aligadobem';
-const googleFormViewUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScU7L94DZblvDCBwXql4Toz4W7r7QTBqf5JsNMk7QRPMjuVKg/viewform';
-const googleFormSubmitUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScU7L94DZblvDCBwXql4Toz4W7r7QTBqf5JsNMk7QRPMjuVKg/formResponse';
+const googleFormViewUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScFrF-lZiwvPyCvAOyGZQQGwAr9wtMTAgQIuPEBof4Lhfva8g/viewform';
+const googleFormSubmitUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScFrF-lZiwvPyCvAOyGZQQGwAr9wtMTAgQIuPEBof4Lhfva8g/formResponse';
 const form = document.getElementById('contact-form');
 const formStatus = document.getElementById('form-status');
 const floatingCta = document.getElementById('floating-cta');
@@ -391,28 +391,28 @@ form?.addEventListener('submit', (event) => {
   }
 
   const payload = new URLSearchParams();
-  payload.append('entry.1649451105', email);
-  payload.append('entry.1258563751', nome);
-  payload.append('entry.69194489', endereco);
-  payload.append('entry.193750435', telefone);
+  payload.append('entry.1045781291', email);
+  payload.append('entry.2005620554', nome);
+  payload.append('entry.1065046570', endereco);
+  payload.append('entry.1166974658', telefone);
   if (experiencia) {
-    payload.append('entry.1203594912', experiencia);
+    payload.append('entry.839337160', experiencia);
   }
   if (conheceu) {
     if (conheceuEhOutro) {
-      payload.append('entry.167906286', '__other_option__');
-      payload.append('entry.167906286.other_option_response', conheceuOutro);
+      payload.append('entry.1052767650', '__other_option__');
+      payload.append('entry.1052767650.other_option_response', conheceuOutro);
     } else {
-      payload.append('entry.167906286', conheceu);
+      payload.append('entry.1052767650', conheceu);
     }
   }
 
-  atividadesValidas.forEach((atividade) => payload.append('entry.1342325393', atividade));
+  atividadesValidas.forEach((atividade) => payload.append('entry.2060078359', atividade));
   if (incluiuAtividadeOutro) {
-    payload.append('entry.1342325393', '__other_option__');
-    payload.append('entry.1342325393.other_option_response', atividadeOutro);
+    payload.append('entry.2060078359', '__other_option__');
+    payload.append('entry.2060078359.other_option_response', atividadeOutro);
   }
-  disponibilidadesValidas.forEach((item) => payload.append('entry.2081573839', item));
+  disponibilidadesValidas.forEach((item) => payload.append('entry.549804088', item));
 
   formStatus.textContent = 'Enviando cadastro...';
   formStatus.className = 'form-status';

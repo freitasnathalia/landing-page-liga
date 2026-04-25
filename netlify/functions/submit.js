@@ -9,7 +9,7 @@
  */
 
 const GOOGLE_FORM_URL =
-  'https://docs.google.com/forms/d/e/1FAIpQLScU7L94DZblvDCBwXql4Toz4W7r7QTBqf5JsNMk7QRPMjuVKg/formResponse';
+  'https://docs.google.com/forms/d/e/1FAIpQLScFrF-lZiwvPyCvAOyGZQQGwAr9wtMTAgQIuPEBof4Lhfva8g/formResponse';
 
 export async function handler(event) {
   if (event.httpMethod !== 'POST') {
